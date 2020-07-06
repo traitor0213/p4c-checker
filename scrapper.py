@@ -15,8 +15,8 @@ BlogList = "study-blog-list.txt"
 try:
 	file = open(BlogList, "r")
 except: 
-	print("[error]: cannot find %s" % BlogList)
-	print("[log]: exit")
+	print("[error] cannot find: %s" % BlogList)
+	print("[log] exit")
 	exit()
 
 links = file.readlines()
@@ -39,18 +39,28 @@ for line in links:
 
 	link = ''.join(_list);
 
-	#http | https request 
-	
-	driver.get(link)
 	path = "./blogs/" + str(count) + ".html"
+		
+	try:
+		#http | https request 
+		driver.get(link)
 
-	out = open(path, "wb")
-	out.write(driver.page_source.encode("utf-8"))
-	out.close()
+	except:
+		print("[error] url open error %s" % link);
 	
+	try:
+		out = open(path, "wb")
+		out.write(driver.page_source.encode("utf-8"))
+		out.close()
+	except:
+		print("[error] file open error %s" % path);
+
+
 	count += 1
 
 file.close()
 driver.quit()
+
+os.system("regex")
 
 exit()

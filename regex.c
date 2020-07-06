@@ -1,6 +1,36 @@
 #include <stdio.h>
 #include <Windows.h>
 
+LPCSTR KMP(const char* ptr1, const char* ptr2, int size)
+{
+	int length1 = size;
+	int length2 = strlen(ptr2);
+
+	for (int i = 0; i != length1; i++)
+	{
+		int j = 0;
+
+		for (; j != length2; j++)
+		{
+			char word1 = ptr1[i + j];
+			if (word1 >= 'A' && word1 <= 'Z') word1 += 32;
+
+			char word2 = ptr2[j];
+			if (word2 >= 'A' && word2 <= 'Z') word2 += 32;
+
+			if (word1 != word2)
+			{
+				j = -1;
+				break;
+			}
+		}
+
+		if (j != -1) return ptr1 + i;
+	}
+
+	return NULL;
+}
+
 int main()
 {
 	char path[1024];
@@ -36,6 +66,17 @@ int main()
 		fseek(fp, 0, SEEK_SET);
 		fdata = (LPSTR)malloc(fsize);
 		fread(fdata, fsize, 1, fp);
+
+		/*
+		for(int f = 0; f != fsize; f++)
+		{
+			if(fdata[f] >= 'A' &&  fdata[f] <= 'Z') 
+			{
+				fdata[f] += 32;	
+			}
+		}
+		*/
+		
 		fclose(fp);
 
 		if(fgets(buffer, sizeof(buffer) - 1, list_file) == NULL) 
@@ -46,7 +87,7 @@ int main()
 			break;
 		}
 
-		if( (ptr = strstr(fdata, "p4c")) != NULL)
+		if( (ptr = KMP(fdata, "p4c", fsize)) != NULL)
 		{
 			strtok(buffer, "\r\n");
 
@@ -69,6 +110,7 @@ int main()
 					break;
 				}
 			}
+			printf("\n");
 		}
 
 		free(fdata);
@@ -78,6 +120,8 @@ int main()
 	}
 
 	fclose(list_file);
+
+	printf("done!\n");
 	
 	return 0;
 }
